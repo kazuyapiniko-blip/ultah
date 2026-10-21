@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Untuk Kamu 🎀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum-deep:#1c0f18;
+    --plum-mid:#2c1522;
+    --plum-card:#38182a;
+    --pink-soft:#ffc2d6;
+    --pink-mid:#f28cb1;
+    --pink-deep:#d9628f;
+    --gold:#f6cf8e;
+    --cream:#fff2f6;
+    --ink:#3a1626;
+    --shadow: 0 14px 34px rgba(15, 3, 10, 0.45);
+    --radius-lg: 26px;
+    --radius-md: 18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, #4a2038 0%, transparent 45%),
+      radial-gradient(circle at 85% 0%, #3a1a30 0%, transparent 40%),
+      linear-gradient(180deg, var(--plum-deep) 0%, #150a11 100%);
+    font-family:'Nunito', sans-serif;
+    color: var(--cream);
+    overflow-x:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1,h2,h3,.display{
+    font-family:'Baloo 2', cursive;
+    margin:0;
+  }
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ---------- floating hearts background ---------- */
+  .hearts-bg{
+    position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden;
+  }
+  .floaty{
+    position:absolute; bottom:-40px; opacity:0.55;
+    animation: floatUp linear forwards;
+    filter: drop-shadow(0 0 6px rgba(255,180,210,0.35));
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.6; }
+    90%{ opacity:0.5; }
+    100%{ transform: translateY(-115vh) translateX(var(--drift,20px)) rotate(25deg); opacity:0; }
+  }
+
+  /* ---------- splash ---------- */
+  #splash{
+    position:fixed; inset:0; z-index:50;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:22px; padding:30px;
+    background: radial-gradient(circle at 50% 30%, #4c1f38 0%, #1c0f18 70%);
+    transition: opacity .7s ease, visibility .7s ease;
+  }
+  #splash.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  #splash .eyebrow{
+    color: var(--pink-soft); letter-spacing:.03em; font-size:14px; opacity:.85;
+  }
+  #splash h1{
+    font-size: clamp(26px, 7vw, 34px);
+    color: var(--cream);
+    line-height:1.25;
+  }
+  #splash h1 span{ color: var(--pink-mid); }
+  .heart-btn{
+    position:relative;
+    width:120px; height:120px;
+    background:none; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .heart-btn svg{ width:100%; height:100%; filter: drop-shadow(0 8px 22px rgba(217,98,143,.55)); }
+  @keyframes pulse{
+    0%,100%{ transform: scale(1); }
+    50%{ transform: scale(1.08); }
+  }
+  #splash .hint{ font-size:13px; color: var(--pink-soft); opacity:.75; }
+  .burst-heart{
+    position:fixed; z-index:60; pointer-events:none; font-size:22px;
+    animation: burstOut .9s ease-out forwards;
+  }
+  @keyframes burstOut{
+    0%{ transform: translate(0,0) scale(0.6); opacity:1; }
+    100%{ transform: translate(var(--bx), var(--by)) scale(1.3); opacity:0; }
+  }
+
+  /* ---------- app shell ---------- */
+  #app{
+    position:relative; z-index:2;
+    max-width:480px; margin:0 auto;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    padding-bottom:86px;
+    opacity:0; transition:opacity .6s ease;
+  }
+  #app.show{ opacity:1; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:center;
+    padding:18px 20px 10px;
+    text-align:center;
+  }
+  .topbar .brand{
+    font-family:'Baloo 2', cursive; font-size:19px; color:var(--pink-soft);
+    letter-spacing:.02em;
+  }
+
+  main{ flex:1; padding: 4px 18px 20px; }
+
+  .page{ display:none; animation: fadeIn .5s ease; }
+  .page.active{ display:block; }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .page-title{
+    font-size: clamp(24px,6vw,30px);
+    color: var(--cream);
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .page-sub{
+    text-align:center; color: var(--pink-soft); font-size:14px; margin-bottom:22px;
+    opacity:.9;
+  }
+
+  /* ---------- foto: polaroid, masonry ---------- */
+  .gallery{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;
+  }
+  .gcol{ display:flex; flex-direction:column; gap:18px; }
+  .gcol-b{ padding-top:28px; }
+  .polaroid{
+    position:relative; margin:0; padding:8px 8px 0;
+    background:#fff4f7; border-radius:6px;
+    box-shadow: var(--shadow);
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform .25s ease, box-shadow .25s ease;
+    cursor:pointer;
+  }
+  .polaroid:active{ transform: rotate(0deg) scale(1.03); }
+  .polaroid::before{
+    content:""; position:absolute; top:-9px; left:50%; width:54px; height:18px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(242,140,177,.55); border-radius:3px; z-index:2;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  }
+  .polaroid img{
+    display:block; width:100%; height:auto; border-radius:3px; background:#4a2038;
+  }
+  .polaroid figcaption{
+    padding:9px 4px 11px; font-size:12.5px; line-height:1.35;
+    color: var(--ink); text-align:center; font-style:italic;
+  }
+  .polaroid.no-cap{ padding-bottom:22px; }
+
+  .lightbox{
+    position:fixed; inset:0; z-index:80; background:rgba(10,4,8,.93);
+    display:none; align-items:center; justify-content:center; padding:56px 14px 40px;
+    touch-action:pan-y;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.6); }
+  .lb-btn{
+    position:absolute; background:rgba(255,255,255,.14); border:none; color:#fff;
+    width:42px; height:42px; border-radius:50%; font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-close{ top:16px; right:16px; }
+  .lb-prev{ left:10px; top:50%; transform:translateY(-50%); }
+  .lb-next{ right:10px; top:50%; transform:translateY(-50%); }
+  .lb-count{ position:absolute; bottom:16px; left:0; right:0; text-align:center; font-size:13px; color:var(--pink-soft); }
+
+  /* ---------- section 2: pesan ---------- */
+  .letter-card{
+    background: linear-gradient(180deg, var(--plum-card), #2a1420);
+    border-radius: var(--radius-lg);
+    padding:24px 20px;
+    box-shadow: var(--shadow);
+    border:1px solid rgba(255,255,255,.06);
+  }
+  .letter-card p{
+    font-size:15px; line-height:1.75; color: #ffe6ef;
+    margin: 0 0 14px;
+  }
+  .letter-card .signoff{
+    text-align:right; font-family:'Baloo 2',cursive; color: var(--pink-mid); font-size:17px;
+  }
+  .letter-duo{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:26px 4px 24px;
+  }
+  .letter-duo .polaroid:nth-child(1){ --tilt:-2deg; }
+  .letter-duo .polaroid:nth-child(2){ --tilt:2deg; margin-top:14px; }
+  .letter-duo .polaroid img{ aspect-ratio:3/4; object-fit:cover; }
+
+  /* ---------- section 3: lagu ---------- */
+  .video-wrap{
+    position:relative; width:100%; padding-top:56.25%;
+    border-radius:var(--radius-md); overflow:hidden; box-shadow: var(--shadow);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .video-wrap iframe{
+    position:absolute; inset:0; width:100%; height:100%; border:0;
+  }
+  .song-caption{
+    text-align:center; margin-top:10px; font-size:13px; color: var(--pink-soft);
+  }
+  .collage{
+    display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-top:24px;
+  }
+  .collage .frame{
+    margin:0; padding:6px; background:#fff4f7; border-radius:10px;
+    box-shadow: var(--shadow); cursor:pointer; overflow:hidden;
+    display:flex;
+  }
+  .collage .frame img{
+    width:100%; height:100%; object-fit:cover; border-radius:6px; display:block;
+  }
+  .collage .frame.tall{ grid-row:1 / span 2; }
+  .collage .frame.small{ aspect-ratio:3/4; }
+  .collage .frame:active{ transform:scale(.98); }
+
+  .yt-link{ display:inline-block; margin-top:8px; color:var(--pink-mid); font-size:12.5px; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+
+  /* ---------- section 4: alasan cards ---------- */
+  .reason-grid{ display:flex; flex-direction:column; gap:14px; }
+  .flip-card{
+    perspective:1000px; height:110px; cursor:pointer;
+  }
+  .flip-inner{
+    position:relative; width:100%; height:100%;
+    transition: transform .6s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .flip-card.flipped .flip-inner{ transform: rotateY(180deg); }
+  .flip-front, .flip-back{
+    position:absolute; inset:0; border-radius:var(--radius-md);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    backface-visibility:hidden; padding:14px; text-align:center;
+    box-shadow: var(--shadow);
+  }
+  .flip-front{
+    background: linear-gradient(135deg, var(--pink-deep), #a5426f);
+    color:#fff;
+  }
+  .flip-front .emoji{ font-size:28px; margin-bottom:6px; }
+  .flip-front .label{ font-family:'Baloo 2',cursive; font-size:16px; }
+  .flip-back{
+    background: linear-gradient(135deg, #3a1a2a, #2a1220);
+    transform: rotateY(180deg);
+    color:#ffe6ef; font-size:13.5px; line-height:1.5;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .tap-hint{ text-align:center; font-size:12px; color:var(--pink-soft); opacity:.7; margin-top:14px;}
+
+  /* ---------- section 5: game ---------- */
+  .quiz-box{
+    background: var(--plum-card); border-radius: var(--radius-lg);
+    padding:22px 18px; box-shadow: var(--shadow); border:1px solid rgba(255,255,255,.06);
+  }
+  .quiz-progress{
+    display:flex; gap:6px; margin-bottom:16px;
+  }
+  .quiz-progress span{
+    flex:1; height:5px; border-radius:3px; background: rgba(255,255,255,.12);
+  }
+  .quiz-progress span.done{ background: var(--pink-mid); }
+  .quiz-q{ font-size:16px; margin-bottom:16px; color:#fff; line-height:1.5; }
+  .quiz-opts{ display:flex; flex-direction:column; gap:10px; }
+  .quiz-opt{
+    background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+    color:#ffe6ef; padding:12px 14px; border-radius:14px; text-align:left;
+    font-size:14.5px; cursor:pointer; transition: background .2s, transform .15s;
+  }
+  .quiz-opt:active{ transform: scale(.98); }
+  .quiz-opt.chosen{ background: var(--pink-deep); color:#fff; border-color:transparent; }
+  .quiz-feedback{
+    margin-top:14px; font-size:13.5px; color: var(--gold); min-height:18px;
+  }
+  .quiz-next{
+    margin-top:18px; width:100%; padding:12px; border:none; border-radius:14px;
+    background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+    color:#fff; font-family:'Baloo 2',cursive; font-size:15px; cursor:pointer;
+    display:none;
+  }
+  .quiz-result{ display:none; text-align:center; }
+  .quiz-result .score{
+    font-family:'Baloo 2',cursive; font-size:40px; color: var(--pink-mid); margin:10px 0;
+  }
+  .quiz-result p{ font-size:14.5px; line-height:1.7; color:#ffe6ef; }
+
+  /* ---------- section 6: surat ---------- */
+  .envelope-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:20px; padding-top:10px;
+  }
+  .envelope{
+    width:220px; height:150px; position:relative; cursor:pointer;
+  }
+  .env-body{
+    position:absolute; inset:0; background: linear-gradient(160deg, #d9628f, #a5426f);
+    border-radius:10px; box-shadow: var(--shadow);
+  }
+  .env-flap{
+    position:absolute; top:0; left:0; right:0; height:78px;
+    background: linear-gradient(160deg, #f2a6c1, #d9628f);
+    clip-path: polygon(0 0, 100% 0, 50% 78%);
+    transform-origin: top center;
+    transition: transform .6s ease;
+    border-radius: 10px 10px 0 0;
+    z-index:3;
+  }
+  .envelope.open .env-flap{ transform: rotateX(180deg); }
+  .env-heart{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-size:26px; z-index:2;
+  }
+  .envelope-label{ text-align:center; font-size:14px; color: var(--pink-soft); line-height:1.6; }
+  .open-btn{
+    padding:13px 26px; border:none; border-radius:30px;
+    background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+    color:#fff; font-family:'Baloo 2',cursive; font-size:15px; cursor:pointer;
+    box-shadow: var(--shadow);
+  }
+  .letter-reveal{
+    display:none; background: var(--cream); color: var(--ink); border-radius: var(--radius-lg);
+    padding:24px 20px; margin-top:6px; box-shadow: var(--shadow);
+    animation: unfold .6s ease;
+  }
+  @keyframes unfold{
+    from{ opacity:0; transform: translateY(-10px) scale(.97); }
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+  .letter-reveal p{ font-size:14.5px; line-height:1.8; margin:0 0 12px; }
+  .letter-reveal .final-sign{
+    text-align:right; font-family:'Baloo 2',cursive; font-size:16px; color: var(--pink-deep);
+  }
+
+  /* ---------- bottom nav ---------- */
+  .bottomnav{
+    position:fixed; bottom:0; left:0; right:0; z-index:10;
+    max-width:480px; margin:0 auto;
+    background: rgba(28,15,24,.92);
+    backdrop-filter: blur(6px);
+    border-top:1px solid rgba(255,255,255,.08);
+    display:flex; justify-content:space-between; padding:10px 8px 14px;
+  }
+  .nav-btn{
+    flex:1; min-width:0; background:none; border:none; color: rgba(255,255,255,.5);
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-size:9.5px; cursor:pointer; padding:4px 0;
+  }
+  .nav-btn .ic{ font-size:18px; }
+  .nav-btn.active{ color: var(--pink-mid); }
+
+  @media (min-width:481px){
+    body{ background-color:#150a11; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="eyebrow">✨ sebuah halaman kecil ✨</div>
+  <h1>Sebelum masuk,<br>tekan <span>hati</span> ini dulu ya 🎀</h1>
+  <button class="heart-btn" id="heartBtn" aria-label="Buka">
+    <svg viewBox="0 0 100 90">
+      <path d="M50 85 C 20 60, 0 40, 0 22 C 0 5, 15 -2, 30 5 C 40 10, 47 20, 50 27 C 53 20, 60 10, 70 5 C 85 -2, 100 5, 100 22 C 100 40, 80 60, 50 85 Z" fill="#e37ca6"/>
+    </svg>
+  </button>
+  <div class="hint">tekan buat lanjut 💗</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar"><div class="brand">Untuk Kamu 🎀</div></div>
+
+  <main>
+
+    <!-- 1. FOTO -->
+    <section class="page active" id="page-foto">
+      <h2 class="page-title">Kenangan Kita 📸</h2>
+      <p class="page-sub">beberapa momen yang aku suka banget</p>
+      <div class="gallery">
+        <div class="gcol">
+          <figure class="polaroid" style="--tilt:-1.8deg" data-lb="photos/foto1.jpg" data-idx="0">
+            <img src="photos/foto1.jpg" alt="foto 1" width="649" height="1157" loading="lazy">
+            <figcaption>senyum kamu di sini gemesin 🥹</figcaption>
+          </figure>
+          <figure class="polaroid" style="--tilt:1.2deg" data-lb="photos/foto4.jpg" data-idx="3">
+            <img src="photos/foto4.jpg" alt="foto 4" width="1170" height="1542" loading="lazy">
+            <figcaption>foto favorit aku ini 🎀</figcaption>
+          </figure>
+        </div>
+        <div class="gcol gcol-b">
+          <figure class="polaroid" style="--tilt:1.6deg" data-lb="photos/foto3.jpg" data-idx="2">
+            <img src="photos/foto3.jpg" alt="foto 3" width="1170" height="1542" loading="lazy">
+            <figcaption>cantik dari sudut manapun 💗</figcaption>
+          </figure>
+          <figure class="polaroid" style="--tilt:-1.4deg" data-lb="photos/foto2.jpg" data-idx="1">
+            <img src="photos/foto2.jpg" alt="foto 2" width="660" height="1172" loading="lazy">
+            <figcaption>gaya andalan kamu 😆</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. PESAN -->
+    <section class="page" id="page-pesan">
+      <h2 class="page-title">Sedikit Kata 💌</h2>
+      <p class="page-sub">yang jarang aku ucapkan langsung</p>
+      <div class="letter-card">
+        <p>Aku cuma mau ngomong sesuatu yang mungkin jarang aku sampaikan. Aku bersyukur banget bisa kenal kamu dan sampai sekarang masih bisa jalan bareng sama kamu. Dari sekian banyak orang yang aku temui, aku senang karena akhirnya ada seseorang yang bisa bikin aku nyaman buat cerita, bercanda, dan jadi diri sendiri.</p>
+
+        <div class="letter-duo">
+          <figure class="polaroid no-cap" data-lb="photos/foto5.jpg" data-idx="0">
+            <img src="photos/foto5.jpg" alt="foto kenangan 5" width="683" height="914" loading="lazy">
+          </figure>
+          <figure class="polaroid no-cap" data-lb="photos/foto6.jpg" data-idx="1">
+            <img src="photos/foto6.jpg" alt="foto kenangan 6" width="832" height="1110" loading="lazy">
+          </figure>
+        </div>
+
+        <p>Aku tahu hubungan kita nggak selalu berjalan mulus. Kadang kita beda pendapat, salah paham, atau ada hal hal kecil yang bikin kita kesel satu sama lain. Tapi menurutku, itu semua bagian dari proses kita buat saling mengenal dan memahami. Aku nggak berharap hubungan kita selalu sempurna, aku cuma berharap kita sama sama mau berusaha ketika ada masalah.</p>
+        <p>Aku juga mungkin bukan orang yang paling pandai menunjukkan perasaan. Kadang aku nggak tahu harus ngomong apa, kadang perhatian yang aku kasih juga mungkin nggak selalu sesuai dengan yang kamu harapkan. Tapi bukan berarti aku nggak peduli. Aku tetap menghargai kamu, perhatian kamu, waktu yang kamu kasih, dan semua hal kecil yang kamu lakukan buat aku.</p>
+        <p>Aku senang sama hal hal sederhana yang kita lewatin bareng. Bisa ngobrol, bercanda, saling cerita tentang hari masing masing, atau sekadar tahu kalau ada seseorang yang bisa kita hubungi ketika lagi butuh teman. Hal hal sederhana seperti itu ternyata berarti buat aku.</p>
+        <p>Aku juga berharap kalau ke depannya kita bisa lebih terbuka satu sama lain. Kalau ada yang nggak disukai, bilang. Kalau ada yang bikin sedih, cerita. Jangan dipendam sendiri. Aku pengen kita bukan cuma ada saat semuanya baik baik aja, tapi juga bisa saling menguatkan ketika salah satu dari kita lagi capek atau punya masalah.</p>
+        <p>Intinya, aku senang punya kamu. Aku nggak tahu hubungan ini akan berjalan seperti apa ke depannya, tapi selama kita masih sama sama mau menjaga dan memperjuangkannya, aku ingin menikmati setiap prosesnya sama kamu. ❤️</p>
+        <div class="signoff">— dari aku, buat kamu</div>
+      </div>
+    </section>
+
+    <!-- 3. LAGU -->
+    <section class="page" id="page-lagu">
+      <h2 class="page-title">Lagu Buat Kamu 🎵</h2>
+      <p class="page-sub">dengerin ini sambil liat foto kita ya</p>
+      <div class="video-wrap"><div id="songPlayer"></div></div>
+      <div class="song-caption">🎧 lagunya otomatis muter di halaman ini dan berhenti sendiri kalau kamu pindah halaman<br><a class="yt-link" id="songLink" href="#" target="_blank" rel="noopener">kalau nggak muter, buka di YouTube ▶️</a></div>
+      <div class="collage">
+        <figure class="frame tall" data-lb="photos/foto7.jpg" data-idx="0"><img src="photos/foto7.jpg" alt="foto 7" style="object-position:center 30%" loading="lazy"></figure>
+        <figure class="frame small" data-lb="photos/foto8.jpg" data-idx="1"><img src="photos/foto8.jpg" alt="foto 8" style="object-position:70% 40%" loading="lazy"></figure>
+        <figure class="frame small" data-lb="photos/foto9.jpg" data-idx="2"><img src="photos/foto9.jpg" alt="foto 9" style="object-position:center 35%" loading="lazy"></figure>
+      </div>
+    </section>
+
+    <!-- 3b. VIDEO UCAPAN -->
+    <section class="page" id="page-video">
+      <h2 class="page-title">Video Ucapan 🎥</h2>
+      <p class="page-sub">ada yang mau aku sampaikan lewat video 🥺💗</p>
+      <div class="video-wrap"><div id="greetPlayer"></div></div>
+      <div class="song-caption">🎀 video otomatis diputar di halaman ini dan berhenti sendiri kalau kamu pindah halaman<br><a class="yt-link" href="https://www.youtube.com/watch?v=EytZ7cVUH6g" target="_blank" rel="noopener">kalau nggak muter, buka di YouTube ▶️</a></div>
+    </section>
+
+    <!-- 4. ALASAN -->
+    <section class="page" id="page-alasan">
+      <h2 class="page-title">Kenapa Aku Suka Kamu? 💗</h2>
+      <p class="page-sub">pencet kartunya satu satu ya</p>
+      <div class="reason-grid" id="reasonGrid">
+        <div class="flip-card" data-reason="0">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🥰</div><div class="label">Senyummu</div></div>
+            <div class="flip-back">Karena senyum kamu bisa bikin suasana jadi lebih menyenangkan.</div>
+          </div>
+        </div>
+        <div class="flip-card" data-reason="1">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">😂</div><div class="label">Tingkah kamu</div></div>
+            <div class="flip-back">Kadang lucu, kadang ngeselin, tapi justru itu yang bikin kamu beda.</div>
+          </div>
+        </div>
+        <div class="flip-card" data-reason="2">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🫶</div><div class="label">Perhatianmu</div></div>
+            <div class="flip-back">Hal-hal kecil yang kamu lakukan ternyata berarti buat aku.</div>
+          </div>
+        </div>
+        <div class="flip-card" data-reason="3">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🏠</div><div class="label">Kenyamanan</div></div>
+            <div class="flip-back">Aku bisa cerita dan jadi diri sendiri ketika sama kamu.</div>
+          </div>
+        </div>
+        <div class="flip-card" data-reason="4">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🌷</div><div class="label">Kamu yang apa adanya</div></div>
+            <div class="flip-back">Aku suka kamu bukan karena harus sempurna, tapi karena kamu adalah kamu.</div>
+          </div>
+        </div>
+      </div>
+      <div class="tap-hint">tiap kartu dibuka, ada kejutan kecil 💕</div>
+    </section>
+
+    <!-- 5. GAME -->
+    <section class="page" id="page-game">
+      <h2 class="page-title">Seberapa Kenal Kamu Sama Aku? 🎮</h2>
+      <p class="page-sub">yuk coba jawab, 5 pertanyaan aja</p>
+
+      <div class="quiz-box">
+        <div class="quiz-progress" id="quizProgress"></div>
+        <div id="quizArea"></div>
+        <button class="quiz-next" id="quizNext">Lanjut ➡️</button>
+
+        <div class="quiz-result" id="quizResult">
+          <div>🎉 QUIZ SELESAI!</div>
+          <div class="score">5/5 ❤️</div>
+          <p>Ternyata kamu cukup kenal sama aku... atau jangan jangan karena kamu memang orang yang penting buat aku? 🥺❤️</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SURAT -->
+    <section class="page" id="page-surat">
+      <h2 class="page-title">Surat Rahasia 💌</h2>
+      <div class="envelope-wrap">
+        <p class="envelope-label">💌 Ada satu pesan terakhir buat kamu...<br>Jangan dibuka kalau belum siap 🫣</p>
+        <div class="envelope" id="envelope">
+          <div class="env-flap"></div>
+          <div class="env-heart">❤️</div>
+          <div class="env-body"></div>
+        </div>
+        <button class="open-btn" id="openLetterBtn">Buka Surat 💌</button>
+
+        <div class="letter-reveal" id="letterReveal">
+          <p>Hai kamu ❤️</p>
+          <p>Kalau kamu sudah sampai di bagian ini, berarti kamu sudah melihat semuanya. Terima kasih sudah meluangkan waktu buat melihat website kecil ini.</p>
+          <p>Aku mungkin nggak selalu pandai mengungkapkan apa yang aku rasakan secara langsung, jadi kali ini aku coba menyampaikannya lewat halaman kecil ini. Semoga setiap foto, lagu, dan tulisan di sini bisa mengingatkan kamu sama hal hal kecil yang pernah kita lewati bersama. 🥺❤️</p>
+          <p>Aku senang bisa punya kamu. ❤️</p>
+          <div class="final-sign">PESAN DARI PAJAR RORRRR 🦖</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottomnav">
+    <button class="nav-btn active" data-page="page-foto"><span class="ic">📸</span>Foto</button>
+    <button class="nav-btn" data-page="page-pesan"><span class="ic">💌</span>Pesan</button>
+    <button class="nav-btn" data-page="page-lagu"><span class="ic">🎵</span>Lagu</button>
+    <button class="nav-btn" data-page="page-video"><span class="ic">🎥</span>Video</button>
+    <button class="nav-btn" data-page="page-alasan"><span class="ic">💗</span>Alasan</button>
+    <button class="nav-btn" data-page="page-game"><span class="ic">🎮</span>Game</button>
+    <button class="nav-btn" data-page="page-surat"><span class="ic">🔒</span>Surat</button>
+  </nav>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-btn lightbox-close" id="lightboxClose" aria-label="Tutup">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Sebelumnya">‹</button>
+  <img id="lightboxImg" src="" alt="foto">
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Berikutnya">›</button>
+  <div class="lb-count" id="lbCount"></div>
+</div>
+
+<script>
+/* ---------- floating hearts background ---------- */
+const heartsBg = document.getElementById('heartsBg');
+const heartEmojis = ['💗','💕','💖','🎀','✨'];
+function spawnHeart(){
+  const el = document.createElement('div');
+  el.className = 'floaty';
+  el.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+  const size = 12 + Math.random()*16;
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.fontSize = size + 'px';
+  el.style.setProperty('--drift', (Math.random()*80-40) + 'px');
+  const duration = 9 + Math.random()*8;
+  el.style.animationDuration = duration + 's';
+  heartsBg.appendChild(el);
+  setTimeout(()=> el.remove(), duration*1000 + 500);
+}
+setInterval(spawnHeart, 900);
+for(let i=0;i<6;i++) setTimeout(spawnHeart, i*300);
+
+/* ---------- splash ---------- */
+const splash = document.getElementById('splash');
+const heartBtn = document.getElementById('heartBtn');
+const app = document.getElementById('app');
+
+function burstHearts(x,y){
+  for(let i=0;i<14;i++){
+    const b = document.createElement('div');
+    b.className = 'burst-heart';
+    b.textContent = ['💗','💕','💖','✨'][Math.floor(Math.random()*4)];
+    b.style.left = x+'px';
+    b.style.top = y+'px';
+    const angle = Math.random()*Math.PI*2;
+    const dist = 60 + Math.random()*120;
+    b.style.setProperty('--bx', Math.cos(angle)*dist + 'px');
+    b.style.setProperty('--by', Math.sin(angle)*dist + 'px');
+    document.body.appendChild(b);
+    setTimeout(()=> b.remove(), 950);
+  }
+}
+
+/* ---------- musik & video (YouTube IFrame API) ---------- */
+const SONG_ID  = 'grp6FCnioMM';   // lagu di halaman Lagu
+const GREET_ID = 'EytZ7cVUH6g';   // video ucapan di halaman Video
+document.getElementById('songLink').href = 'https://www.youtube.com/watch?v=' + SONG_ID;
+
+const PLAYERS = {
+  'page-lagu':  { el:'songPlayer',  id:SONG_ID,  loop:true  },
+  'page-video': { el:'greetPlayer', id:GREET_ID, loop:false }
+};
+const yt = {};            // page id -> YT.Player
+const ytReady = {};       // page id -> sudah siap?
+let ytApiReady = false;
+let currentPage = 'page-foto';
+
+function loadYouTubeAPI(){
+  if(window.YT && window.YT.Player){ ytApiReady = true; return; }
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+window.onYouTubeIframeAPIReady = function(){
+  ytApiReady = true;
+  ensurePlayer(currentPage);
+};
+
+function ensurePlayer(pageId){
+  const cfg = PLAYERS[pageId];
+  if(!cfg || yt[pageId] || !ytApiReady) return;
+  const vars = { playsinline:1, rel:0, modestbranding:1, autoplay:1 };
+  if(cfg.loop){ vars.loop = 1; vars.playlist = cfg.id; }
+  yt[pageId] = new YT.Player(cfg.el, {
+    videoId: cfg.id,
+    playerVars: vars,
+    events: {
+      onReady: (e)=>{
+        ytReady[pageId] = true;
+        // kalau pengguna masih di halaman ini, langsung putar
+        if(currentPage === pageId){ try{ e.target.playVideo(); }catch(_){} }
+        else { try{ e.target.pauseVideo(); }catch(_){} }
+      }
+    }
+  });
+}
+
+// dipanggil tiap pindah halaman: halaman tujuan -> play, halaman lain -> pause
+function syncMedia(newPage){
+  Object.keys(PLAYERS).forEach(pageId=>{
+    const p = yt[pageId];
+    if(pageId === newPage){
+      if(!p) ensurePlayer(pageId);
+      else if(ytReady[pageId]){ try{ p.playVideo(); }catch(_){} }
+    } else if(p && ytReady[pageId]){
+      try{ p.pauseVideo(); }catch(_){}
+    }
+  });
+}
+
+heartBtn.addEventListener('click', ()=>{
+  const rect = heartBtn.getBoundingClientRect();
+  burstHearts(rect.left+rect.width/2, rect.top+rect.height/2);
+  loadYouTubeAPI();            // cuma siapin API, belum muter apa-apa
+  splash.classList.add('hide');
+  setTimeout(()=>{ app.classList.add('show'); }, 350);
+});
+
+/* ---------- navigation ---------- */
+const navBtns = document.querySelectorAll('.nav-btn');
+const pages = document.querySelectorAll('.page');
+navBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.dataset.page;
+    navBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    pages.forEach(p=>p.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+    if(target !== currentPage){
+      currentPage = target;
+      syncMedia(target);
+    }
+  });
+});
+
+/* ---------- lightbox (bisa geser antar foto di halaman yang sama) ---------- */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lbPrev = document.getElementById('lbPrev');
+const lbNext = document.getElementById('lbNext');
+const lbCount = document.getElementById('lbCount');
+let lbList = [], lbPos = 0;
+
+function showLb(){
+  lightboxImg.src = lbList[lbPos];
+  lbCount.textContent = lbList.length > 1 ? (lbPos+1) + ' / ' + lbList.length : '';
+  const multi = lbList.length > 1;
+  lbPrev.style.display = lbNext.style.display = multi ? 'flex' : 'none';
+}
+function openLightbox(el){
+  const page = el.closest('.page');
+  const items = [...page.querySelectorAll('[data-lb]')]
+    .sort((a,b)=> (+a.dataset.idx) - (+b.dataset.idx));
+  lbList = items.map(i=>i.dataset.lb);
+  lbPos = items.indexOf(el);
+  showLb();
+  lightbox.classList.add('open');
+}
+function stepLb(d){
+  if(lbList.length < 2) return;
+  lbPos = (lbPos + d + lbList.length) % lbList.length;
+  showLb();
+}
+document.querySelectorAll('[data-lb]').forEach(el=> el.addEventListener('click', ()=> openLightbox(el)));
+document.getElementById('lightboxClose').addEventListener('click', ()=> lightbox.classList.remove('open'));
+lbPrev.addEventListener('click', (e)=>{ e.stopPropagation(); stepLb(-1); });
+lbNext.addEventListener('click', (e)=>{ e.stopPropagation(); stepLb(1); });
+lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) lightbox.classList.remove('open'); });
+document.addEventListener('keydown', (e)=>{
+  if(!lightbox.classList.contains('open')) return;
+  if(e.key === 'Escape') lightbox.classList.remove('open');
+  if(e.key === 'ArrowLeft') stepLb(-1);
+  if(e.key === 'ArrowRight') stepLb(1);
+});
+let touchX = null;
+lightbox.addEventListener('touchstart', (e)=>{ touchX = e.touches[0].clientX; }, {passive:true});
+lightbox.addEventListener('touchend', (e)=>{
+  if(touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if(Math.abs(dx) > 50) stepLb(dx < 0 ? 1 : -1);
+  touchX = null;
+});
+
+/* ---------- flip cards ---------- */
+document.querySelectorAll('.flip-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    const wasFlipped = card.classList.contains('flipped');
+    card.classList.toggle('flipped');
+    if(!wasFlipped){
+      const rect = card.getBoundingClientRect();
+      burstHearts(rect.left+rect.width/2, rect.top+rect.height/2);
+    }
+  });
+});
+
+/* ---------- quiz ---------- */
+const questions = [
+  {
+    q: "Kalau kita lagi jalan bareng, aku paling suka...",
+    opts: ["Makan 🍜","Jalan-jalan 🚶‍♀️","Foto-foto 📸","Semua benar 😆"],
+    fb: "Bener banget, semua momennya emang seru bareng kamu 🥰"
+  },
+  {
+    q: "Menurut kamu, hal apa yang paling aku suka dari kamu?",
+    opts: ["Senyum kamu 😊","Perhatian kamu 🫶","Tingkah kamu 😂","Semuanya ❤️"],
+    fb: "Yap, kamu emang paket lengkap sih 😌❤️"
+  },
+  {
+    q: "Kalau aku lagi punya masalah, aku biasanya lebih suka...",
+    opts: ["Cerita ke kamu 💬","Diam dulu 🤐","Tidur 😴","Main game 🎮"],
+    fb: "Betul, apapun jawabannya kamu selalu tau cara mengerti aku 🥹"
+  },
+  {
+    q: "Momen sederhana yang paling aku suka?",
+    opts: ["Ngobrol sampai lupa waktu 💬","Jalan bareng 🚶‍♂️","Bercanda bareng 😂","Semuanya ❤️"],
+    fb: "Setuju, hal sederhana emang paling berkesan kalau sama kamu 💗"
+  },
+  {
+    q: "Kalau dikasih kesempatan mengulang satu momen bersama kamu, aku bakal...",
+    opts: ["Memilih momen pertama kita kenal 🌱","Memilih momen paling lucu 😂","Memilih momen yang paling berkesan 📸","Membuat kenangan baru ❤️"],
+    fb: "Jawaban terakhir dan paling manis 🥺❤️"
+  }
+];
+
+let qIndex = 0;
+const quizArea = document.getElementById('quizArea');
+const quizProgress = document.getElementById('quizProgress');
+const quizNext = document.getElementById('quizNext');
+const quizResult = document.getElementById('quizResult');
+const quizBoxTitle = document.querySelector('#page-game .page-sub');
+
+function renderProgress(){
+  quizProgress.innerHTML = '';
+  for(let i=0;i<questions.length;i++){
+    const s = document.createElement('span');
+    if(i < qIndex) s.classList.add('done');
+    quizProgress.appendChild(s);
+  }
+}
+
+function renderQuestion(){
+  quizNext.style.display = 'none';
+  const item = questions[qIndex];
+  quizArea.innerHTML = `
+    <div class="quiz-q">${qIndex+1}. ${item.q}</div>
+    <div class="quiz-opts">
+      ${item.opts.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${o}</button>`).join('')}
+    </div>
+    <div class="quiz-feedback" id="quizFeedback"></div>
+  `;
+  renderProgress();
+  document.querySelectorAll('.quiz-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(btn.parentElement.dataset.answered) return;
+      btn.parentElement.dataset.answered = "1";
+      document.querySelectorAll('.quiz-opt').forEach(b=> b.classList.remove('chosen'));
+      btn.classList.add('chosen');
+      document.getElementById('quizFeedback').textContent = "💖 " + item.fb;
+      quizNext.style.display = 'block';
+      const rect = btn.getBoundingClientRect();
+      burstHearts(rect.left+rect.width/2, rect.top+rect.height/2);
+    });
+  });
+}
+
+quizNext.addEventListener('click', ()=>{
+  qIndex++;
+  if(qIndex >= questions.length){
+    quizArea.style.display = 'none';
+    quizNext.style.display = 'none';
+    quizProgress.style.display = 'none';
+    if(quizBoxTitle) quizBoxTitle.style.display = 'none';
+    quizResult.style.display = 'block';
+    const rect = quizResult.getBoundingClientRect();
+    burstHearts(rect.left+rect.width/2, rect.top+40);
+  } else {
+    renderQuestion();
+  }
+});
+
+renderQuestion();
+
+/* ---------- surat ---------- */
+const envelope = document.getElementById('envelope');
+const openLetterBtn = document.getElementById('openLetterBtn');
+const letterReveal = document.getElementById('letterReveal');
+openLetterBtn.addEventListener('click', ()=>{
+  envelope.classList.add('open');
+  setTimeout(()=>{
+    letterReveal.style.display = 'block';
+    openLetterBtn.style.display = 'none';
+    const rect = envelope.getBoundingClientRect();
+    burstHearts(rect.left+rect.width/2, rect.top+rect.height/2);
+    letterReveal.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 500);
+});
+</script>
+
+</body>
+</html>
